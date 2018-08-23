@@ -1,13 +1,20 @@
 $(document).ready(function(){
     $("h3").button();
     var turno = "",
-        turnoActivo = false,
-        mensaje = "",
+        turnoStatus = 0,
         offset = "",
-        gridSize = 0,
         efecto = "slide",
         transicion = "swing",
         duracion = 500;
+        posicionSaltar = [],
+        fichaActual= "",
+        fichaSaltar = "",
+        movimientoValido = false;
+        dragCol = "",
+        dragFila = "",
+        dropCol="",
+        dropFila="",
+        dropFicha="";
 
     /*----------------------------------------------------------------------------
             Crear Widget de juego
@@ -61,15 +68,6 @@ $(document).ready(function(){
     ----------------------------------------------------------------------------*/
     $("#tablero").damas();
     $("#tablero").damas("posicionarFichas")
-
-    /*----------------------------------------------------------------------------
-            Remover indicadores de movimientos disponibles
-    ----------------------------------------------------------------------------*/
-    function removerDisponibles(){
-        $(".disponible").removeClass("disponible");
-        $(".white").droppable().droppable("destroy");
-    }
-
     /*----------------------------------------------------------------------------
             Verificar jugador en turno
     ----------------------------------------------------------------------------*/
@@ -84,202 +82,291 @@ $(document).ready(function(){
         }else{
             turno =  "jugador1";
             $(".jugador2").draggable("disable");
-            $(".jugador2").removeClass("turno");            
+            $(".jugador2").removeClass("turno");
             $(".jugador1").draggable("enable");
             $(".jugador1").addClass("turno");
         };
-        mostrarDisponibles();
+        obtenerDisponibles();
     }
-
     /*----------------------------------------------------------------------------
             Mostrar movimientos Disponibles
     ----------------------------------------------------------------------------*/
     function obtenerMovimientos(ficha){
-        console.log(ficha)
+        var j_fila = parseInt($(ficha).parent().data("fila"));
+        var j_col = parseInt($(ficha).parent().data("columna"));
+        var t_fila = "";
+        var disponible1 = null;
+        var disponible2 = null;
+        if (turno == "jugador1"){
+            n_fila = parseInt(j_fila+1)
+            sig_fila = parseInt(j_fila+2)
+        }else{
+            n_fila = parseInt(j_fila-1);
+            sig_fila = parseInt(j_fila-2);
+        }
+        //Obtener elementos de la siguiente fila con clase white
+        t_fila = $("#fila-"+(n_fila+ " .white"));
+        disponible1 = t_fila.filter("[data-columna='"+ (j_col+1)+"']");
+        disponible2 = t_fila.filter("[data-columna='"+ (j_col-1)+"']");
+        //obtener los elementos hijos de las filas
+        disponible1_mov = disponible1.children();
+        disponible2_mov = disponible2.children();
+
+        var siguiente1 = mostrarDisponibles(disponible1 ,disponible1_mov);
+        var siguiente2 = mostrarDisponibles(disponible2, disponible2_mov);
+
+        if (!siguiente1){
+            var salto_fila = $("#fila-"+(sig_fila+ " .white"));
+            disponible1_salto = salto_fila.filter("[data-columna='"+ (j_col+2)+"']");
+            disponible1_salto_mov = disponible1_salto.children();
+            mostrarDisponibles(disponible1_salto ,disponible1_salto_mov, true);
+        }
+        if (!siguiente2){
+            var salto_fila = $("#fila-"+(sig_fila+ " .white"));
+            disponible2_salto = salto_fila.filter("[data-columna='"+ (j_col-2)+"']");
+            disponible2_salto_mov = disponible2_salto.children();
+            mostrarDisponibles(disponible2_salto, disponible2_salto_mov, true);
+        }
+    }
+
+    function mostrarDisponibles(disponible, disponible_mov, saltarFicha){
+        if (disponible_mov.length == 0 ){
+            //Agregar el elemento al arreglo
+            if (saltarFicha){
+                $(disponible).addClass("obligado");
+            }
+            $(disponible).addClass("disponible")
+            return true;
+        }else if(disponible_mov.length == 1){
+            if ($(disponible_mov).hasClass(turno)){
+                //Verificar que la ficha no sea del mismo jugador
+                return true;
+            }else{
+                //verificar que la ficha sea del jugador contrario
+                if(!saltarFicha){
+                    $(disponible_mov).addClass("saltar");
+                }
+                return false;
+            }
+        }
     }
     
-    function mostrarDisponibles(){
-        $(".turno").mouseenter(function(){
-            $(this).addClass("hover");
-            obtenerMovimientos($(this));
-            var j_fila = parseInt($(this).parent().data("fila"));
-            var j_col = parseInt($(this).parent().data("columna"));
-            var t_fila = "";
-            var i=1;
-            var disponible1 = null;
-            var disponible2 = null;
-            if (turno == "jugador1"){
-                n_fila = parseInt(j_fila+i)
+    function cambiarTurno(){
+        console.log(fichaActual);
+        console.log("Obetner nuevamente movimiento");
+        obtenerMovimientos(fichaActual);
+        console.log("Remover Movimientos");
+        if (fichaSaltar){
+            console.log("se ha saltado una ficha");
+            console.log(fichaActual)
+            console.log("PosicionSaltar")
+            console.log(posicionSaltar)          
+            obtenerMovimientos(fichaActual);
+            if (posicionSaltar.length == 0){
+                alert("Si hay disponibles")
             }else{
-                n_fila = parseInt(j_fila-i);
+                // alert("No hay disponibles")
+                // removerDisponibles();
+                // verificarTurno();
             }
-            //Obtener elementos de la siguiente fila con clase white
-            t_fila = $("#fila-"+(n_fila+ " .white"));
-            //Filtrar los elementos con el atributo columna +1 y -1
-            disponible1 = t_fila.filter("[data-columna='"+ (j_col+1)+"']");
-            disponible2 = t_fila.filter("[data-columna='"+ (j_col-1)+"']");
-            disponible1_mov = disponible1.children();
-            disponible2_mov = disponible2.children();
-            // console.log(disponible1_mov.length);
-            // console.log(disponible2_mov.length);
-            if (disponible1_mov.length == 0 ){
-                disponible1.addClass("disponible");
-                verificarMovimiento(disponible1);
-            }else if(disponible1_mov.length == 1){
-                console.log("existe una ficha en esa posicion")
-                if ($(disponible1_mov).hasClass(turno)){
-                    console.log("La ficha es del mismo jugador")
-                }else{
-                    console.log("La ficha es del jugador contrario")
-                    var j_fila = parseInt($(disponible1_mov).parent().data("fila"));
-                    var j_col = parseInt($(disponible1_mov).parent().data("columna"));
-                    var t_fila = "";
-                    var i=1;
-                    var disponible1 = null;
-                    var disponible2 = null;
-                    if (turno == "jugador1"){
-                        n_fila = parseInt(j_fila+i)
-                    }else{
-                        n_fila = parseInt(j_fila-i);
-                    }
-                    //Obtener elementos de la siguiente fila con clase white
-                    t_fila = $("#fila-"+(n_fila+ " .white"));
-                    //Filtrar los elementos con el atributo columna +1 y -1
-                    disponible1 = t_fila.filter("[data-columna='"+ (j_col+1)+"']");
-                    disponible2 = t_fila.filter("[data-columna='"+ (j_col-1)+"']");
-                    disponible1_mov = disponible1.children();
-                    disponible2_mov = disponible2.children();
-                    console.log(disponible1_mov)
-                    disponible1.addClass("disponible");
-                    verificarMovimiento(disponible1);
-                }
-
+           
+        }else{
+            console.log("Terminar turno");
+            fichaSaltar = "";
+            turnoStatus = 0;
+            if(turnoStatus == 0){
+                $.each($(".turno"), function(index, objeto){ 
+                    //Eliminar los eventos de mouse enter en las fichas del jugador de turno
+                    $(objeto).unbind("mouseenter");
+                })
+            }else{
+                
             }
-            if (disponible2.children().length == 0 ){
-                disponible2.addClass("disponible");
-                verificarMovimiento(disponible2);
-            }
-
-            
-
-            // $.each(t_fila, function(index, objeto){
-            //     var t_col =  objeto.attributes[2].nodeValue;
-            //     if($(objeto).children().size() == 0){
-            //         if((t_col) == (j_col+1) && $(objeto).children().size() == 0){
-            //             $(objeto).addClass("disponible");
-            //             verificarMovimiento(objeto);
-            //         }
-            //         if((t_col) == (j_col-1) && $(objeto).children().size() == 0){
-            //             $(objeto).addClass("disponible");
-            //             verificarMovimiento(objeto);
-            //         }
-            //     }else if ($(objeto).children().size() == 1){
-            //         if ($(objeto).children().hasClass(turno)){
-            //             //El objeto es una ficha del mismo jugador
-            //             console.log("Exsite una ficha con la posicion del jugador actual")
-            //             console.log($(objeto).children())
-            //         }else{
-            //             if((t_col+1) == (j_col+2) && $(objeto).children().size() == 0){
-            //                 console.log("Movimiento Permitido")
-            //                 $(objeto).addClass("disponible");
-            //                 verificarMovimiento(objeto);
-            //             }
-            //             if((t_col-1) == (j_col-2) && $(objeto).children().size() == 0){
-            //                 $(objeto).addClass("disponible");
-            //                 verificarMovimiento(objeto);
-            //             }
-            //         }
-            //     }
-            // });
-          
+            verificarTurno();
+            removerDisponibles();
+        }
+        console.log("turnoStatus: "+turnoStatus);
+    }; 
+    function obtenerDisponibles(){
+        $(".turno").mouseenter(function(){
+            // $(this).addClass("hover");
+            fichaActual = $(this);
+            obtenerMovimientos(fichaActual);
             $("."+turno).draggable({
                 containment: "#tablero",
                 hoverClass: "hover",
                 cursor: "pointer",
+                // grid: [gridSize,gridSize],
                 zIndex: 100,
-                // grid: [ gridSize, gridSize],
                 revert: "invalid",
-                // disabled: false,
                 start: function(event,ui){
+                    turnoStatus = 1;
                     offset = ui.offset;
+                    dragCol = (ui.helper.parent().data("columna"));
+                    dragFila = (ui.helper.parent().data("fila"));
+                    var isObligada = $(".obligado");
+                    if (isObligada.length > 0){
+                        posicionSaltar.push(isObligada)
+                    }
+                    verificarMovimiento();
                 },
                 drag: function(event,ui){
                     // console.log($("#mensaje").html("DragTop:"+ui.position.top+" DragLeft:"+ui.position.left));
                     var distanciaTop = Math.abs(parseInt(ui.position.top));
                     var distanciaLeft = Math.abs(parseInt(ui.position.left));
                     $("#mensaje").html(distanciaLeft + " " + distanciaTop)
-                    if((distanciaTop >= 67 || distanciaLeft == 0) || (distanciaTop ==0 || distanciaLeft >= 67)){
-                        // $("#mensaje").html("Se paso");
-                        return;
-                    }else{
-                        verificarMovimiento();
-                    }
-                    
                 },
                 stop: function( event, ui ) {
                     var distanciaTop = Math.abs(parseInt(offset.top - ui.offset.top));
                     var distanciaLeft = Math.abs(parseInt(offset.left - ui.offset.left));
                     $("#mensaje").html(distanciaTop + " " + distanciaLeft);
-                    // if((distanciaTop >= 67 || distanciaLeft == 0) || (distanciaTop ==0 || distanciaLeft >= 67)){
-                    //     $("#mensaje").html("Posicion Invalida en Stop")
-                    //     return;
-                    // }else{
-                        verificarMovimiento();
-                        removerDisponibles();
-                    // }
+                    if(fichaSaltar.length > 0){
+                        // console.log(fichaSaltar)
+                        $(".contenedor"+turno).append(fichaSaltar);
+                    }
+                    console.log("Stop")
+                    if(ui.originalPosition != ui.position || movimientoValido == true){
+                        cambiarTurno();
+                    }
+                    
                 },
             });
         });
 
-    function saltarPieza(t_fila){
-        $(t_fila).addClass("saltar")
-    }
     
-    function verificarMovimiento(objeto){
-        $(objeto).droppable({
+    function verificarMovimiento(){
+        $(".disponible").droppable({
             accept: "."+turno,
-            tolerance: "fit",
+            tolerance: "pointer",
             create: function(){
-                // $(".disponible").droppable("disable")
-                // $("#mensaje").html("Creado")
+
             },
             activate: function(event, ui){
-                offset = ui.offset;
-            },
-            deactivate: function(){
-                // mensaje += "Drop Desactivado <br>"
-                // $("#mensaje").html(mensaje)
+                offset = ui.offset;           
             },
             drop: function(event, ui){
+                console.log(ui)
                 mensaje += "Drop Dropped <br>"
                 // $("#mensaje").html(mensaje)
                 if( offset.top != ui.offset.top || offset.left != ui.offset.left){
                     var movida = ui.draggable[0]
                     event.target.append(movida)
                     $(movida).css({"left":"0", "top":"0"})
-                    verificarTurno();
-                    removerDisponibles();
-                    //Eliminar evento mouse Enter en la ficha movida
-                    $(movida).unbind("mouseenter");
+                    
+                    // $(movida).unbind("mouseenter");
+                    dropFicha = ui.draggable;
+                    dropFila = ui.draggable.parent().data("fila")
+                    dropCol = ui.draggable.parent().data("columna")
+                    var getFila = parseInt(dragFila-dropFila);
+                    var getCol = parseInt(dropCol-dragCol)/2;
+
+                    if (Math.abs(getFila) > 1){
+                        if (dropFila > dragFila){
+                            var newFila = (dragFila + 1);
+                        }else{
+                            var newFila = (dragFila - 1);
+                        }
+                        var newCol = (dragCol + getCol);
+                        // console.log(newCol)ss
+                        var filaOcupada = $("#fila-"+newFila).children();
+                        console.log("esta es la fila")
+                        filaOcupada.removeClass("disponible");
+                        fichaSaltar = filaOcupada.filter("[data-columna='"+newCol+"']").children()
+                    }
+                    console.log("drop");
+                    console.log(ui)
+                    
+                    
+                        if(posicionSaltar.length > 0){
+                            // s
+                            console.log(ui.draggable.parent().hasClass("obligado"));
+
+                            // if (ui.position == posicionSaltar[0].position()){
+                            //     alert("Pieza comida")
+                            // }else{
+                            //     alert("Hay un movimiento obligado");
+                            //     return false
+                            // }
+                    //         if (turno == "jugador1"){
+                    //             $(".contenedor2").append(fichaSaltar[0])
+                    //         }
+                    //         if (turno == "jugador2"){
+                    //             $(".contenedor1").append(fichaSaltar[0])
+                    //         }
+                            // dropcol = ui.draggable.parent().data("columna");
+                            // dropfila = ui.draggable.parent().data("fila");
+                            // if(posicionSaltar.length == 1){
+                            //     // posicionSaltar[0].hide("explode", 500);
+                            //     if (turno == "jugador1"){
+                                    
+                            //             // .show("blind", 500));
+                            //     }
+                            //     if (turno == "jugador2"){
+                                    
+                            //         // .show("blind", 500));
+                            //     }
+                            // }else{
+                            //     if (turno == "jugador1"){
+                            //         $(".contenedor2").append(posicionSaltar[0]);
+                            //         if(dropcol > dragCol){
+                            //             $(".contenedor2").append(posicionSaltar[0]);
+                            //         }
+                            //         if(dropcol < dragCol){
+                            //             $(".contenedor2").append(posicionSaltar[1]);
+                            //         }
+                            //     }else if (turno == "jugador2"){
+                            //         if(dropcol < dragCol){
+                            //             $(".contenedor1").append(posicionSaltar[1]);
+                            //         }
+                            //         if(dropcol > dragCol){
+                            //             $(".contenedor1").append(posicionSaltar[0]);
+                            //         }
+                            //     }
+                            // }
+                        }
+                    //Cambiar de turno
+                    // verificarTurno();
+                    // cambiarTurno();
+                    //Eliminar las clases 
                 }
             },
+            deactivate: function(event, ui){
+                // removerDisponibles();
+            },
             out: function(event, ui){
-                // console.log(event)
-                // console.log(ui)
-                // $(this).droppable("disable")
+
             }
         });
     }
 
-        $("."+turno).mouseleave(function(){
-            $(this).removeClass("hover");
+    $("."+turno).mouseleave(function(){
             removerDisponibles()
         });
     }
-   
-    
+
+    /*----------------------------------------------------------------------------
+            Remover indicadores de movimientos disponibles
+    ----------------------------------------------------------------------------*/
+    function removerDisponibles(){
+        // $(".white").unbind("mouseover")
+        posicionDisponible = [];
+        $(".disponible").removeClass("disponible");
+        // $(".obligado").removeClass("obligado");
+        $(".saltar").removeClass("saltar")
+        $().droppable().droppable("destroy");
+        mostrarActivos();
+        // obtenerDisponibles();
+    }
+
+    function mostrarActivos(){
+        activoJugador1 = $("#tablero .jugador1").length;
+        activoJugador2 = $("#tablero .jugador2").length;
+        $("#activoJugador1").html(activoJugador1);
+        $("#activoJugador2").html(activoJugador2);
+    }
 
     verificarTurno();
+    mostrarActivos();
 })
 
 
