@@ -5,32 +5,31 @@
 	<title>jQuery UI Example Page</title>
 	<link href="css/jquery-ui.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Passion+One" rel="stylesheet"> 
 	<script src="js/jquery.js"></script>
 	<script src="js/jquery-ui.js"></script>
 	<script src="js/damas.js"></script>
 </head>
 <body>
-	<div id="top">
-		<h3>Damas</h3>
-	</div>
 	<div class="container">
 		<div id="side-left">
+			<div id="top">
+				<h3>Damas</h3>
+			</div>
 			<h3>Jugador 1</h3>
-			<div class="contenedorjugador1">
+			<div class="contenedorjugador2">
 				<p class="remaining">Fichas Disponibles<span id="activoJugador1"></span></p>
 			</div>
-		</div>
-		<div id="center">
-			<div id="tablero">
-		</div>
-		</div>
-		<div id="side-right">
+		
 			<h3>Jugador 2</h3>
-		<div class="contenedorjugador2">
+			<div class="contenedorjugador1">
 				<p class="remaining">Fichas Disponibles<span id="activoJugador2"></span></p>
 			</div>
 		</div>
+	<div id="side-right">
+		<div id="tablero"></div>
 	</div>
-	<div id="mensaje"></div>
+		<div id="mensaje"></div>
+		</div>
 </body>
 </html>

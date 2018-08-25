@@ -1,10 +1,49 @@
-#tablero{
-    position: relative;
-    width: 640px;
-    height:640px;
-    border: solid 4px green;
-    margin: auto;
+body{
+    font-family: 'Passion One', cursive;
+    position: fixed;
+    width: 100%;
+    height:100%;
+    margin: 0;
 }
+#side-right {
+	position: relative;
+	height: 100vh;
+	width: auto;
+	margin-left: 60px;
+	border: 1px solid blue;
+	-webkit-perspective: 100px;
+	perspective: 80vh;
+	margin: 0;
+}
+#tablero {
+	position: relative;
+	border: 0.5vh solid #3f250f;
+	/* background-color: red; */
+	background: rgba(100,100,100,0.5);
+	-webkit-transform-style: preserve-3d;
+	-webkit-transform: rotateX(45deg);
+	transform-style: preserve-3d;
+	transform: rotateX(12deg);
+	margin: auto;
+	background-image: url('../img/bk.png');
+	box-shadow: 0px 1vh 2vh #000;
+	border-radius: 1vh;
+	width: 80vh;
+	height: 80vh;
+	margin: 5vh auto;
+}
+/* #tablero {
+	position: relative;
+	width: 80vh;
+	height: 80vh;
+	border: solid 4px #6c412d;
+	margin: auto;
+	background-image: url('../img/bk.png');
+	box-shadow: 0px 2px 5px #000;
+    margin: 5vh auto;
+    -webkit-perspective: 100px; /* Safari 4-8  */
+    /* perspective: 100px; */
+/* } */
 [id^="fila"]{
     display:block;
     float: left
@@ -13,16 +52,15 @@
     border: solid 0px #000000;
     display: inline-block;
     float:left;
-    width: 65px;
-    height: 65px;
+    width: 10vh;
+    height: 10vh;
     /* position: relative; */
 }
-
-.black{
-    background-color: #000000;
+.black {
+	background-color: #0000004d;
 }
-.white{
-    background-color: #FFFFFF;
+.white {
+	background-color: #FFFFFF4D;
 }
 [class^="jugador"]{
     border-radius:50%;
@@ -41,6 +79,21 @@
 
 .jugador2{
     background-color: green;
+}
+.king{
+    background-color: blue;
+}
+.king::before {
+	position: relative;
+	content: '';
+	width: 100%;
+	height: 100%;
+	float: left;
+	right: 0;
+	font-family: ionicons;
+	font-size: 8vh;
+	text-align: center;
+	line-height: 7.6vh;
 }
 
 .disponible{
@@ -63,22 +116,27 @@
 /* .saltar [class^="jugador"]{
     border: solid 1px orange;
 } */
-body{
-    width: 100%;
-    height:100%;
-    margin: 0;
-}
+
 .container{
     display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
 }
 #top{
     background: pink;
-    display: block;
+    flex-grow: 1;
+    
 }
-#side-left, #side-right{
+#side-left{
     flex: 1;
     background: orange;
 }
+
+#side-right{
+    flex: 4;
+    /* background: orange; */
+}
+
 #center{
     flex: 4;
     background: rgb(232, 202, 146);
