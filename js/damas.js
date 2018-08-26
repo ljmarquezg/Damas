@@ -22,11 +22,11 @@ $(document).ready(function(){
         //Manejo de alertas
         tituloInvalido = "Movimiento Inválido",
         msjInvalido = "Ha ocurrido un error al procesar el movimietno. Intenta de nuevo",
-        tituloIniciar ="Advertencia!"
-        msjIniciar = '¿Está seguro que desea <b>reiniciar</b> la partida actual?<br><button onclick="reiniciar()">Aceptar</button>';
-        tituloGanador = "Juego Terminado"
-        msjGanador1 = '<span class="fa"><span> Felicidades Jugador1. Has vencido a tu rival</span>'
-        msjGanador2 = '<span class="fa"><span> Felicidades Jugador2. Has vencido a tu rival</span>'
+        tituloIniciar ="Advertencia!",
+        msjIniciar = '<p>¿Está seguro que desea <b>reiniciar</b> la partida actual?</p>';
+        tituloGanador = "Juego Terminado",
+        msjGanador1 = '<span class="fa"><span> Felicidades Jugador1. Has vencido a tu rival</span>',
+        msjGanador2 = '<span class="fa"><span> Felicidades Jugador2. Has vencido a tu rival</span>';
 
     /*----------------------------------------------------------------------------
             Crear Widget de juego
@@ -71,37 +71,32 @@ $(document).ready(function(){
             //Inicializar los objetos como Draggables
             $(".jugador1").draggable();
             $(".jugador2").draggable();
-            turno = ""
+            turno = "";
             verificarJugador();
             actualizarContador();
         }
     });
 
-    /*----------------------------------------------------------------------------
-            Crear Tablero
-    ----------------------------------------------------------------------------*/
-    $("#tablero").damas();
-    $("#iniciar").click(function(){
-        iniciarJuego();
-    })
    /*----------------------------------------------------------------------------
             Verificar jugador en turno
     ----------------------------------------------------------------------------*/
     function verificarJugador(){
+        $(".panel-"+turno).toggleClass("active", duracion, transicion)
         if(turno == "jugador1"){
             turno = "jugador2";
-            $(".jugador1").draggable("disable");
-            $(".jugador1").removeClass("turno");
-            $(".jugador2").draggable("enable");
-            $(".jugador2").addClass("turno");
+            $("#tablero .jugador1").draggable("disable");
+            $("#tablero .jugador1").removeClass("turno");
+            $("#tablero .jugador2").draggable("enable");
+            $("#tablero .jugador2").addClass("turno");
             
         }else{
             turno =  "jugador1";
-            $(".jugador2").draggable("disable");
-            $(".jugador2").removeClass("turno");
-            $(".jugador1").draggable("enable");
-            $(".jugador1").addClass("turno");
+            $("#tablero .jugador2").draggable("disable");
+            $("#tablero .jugador2").removeClass("turno");
+            $("#tablero .jugador1").draggable("enable");
+            $("#tablero .jugador1").addClass("turno");
         };
+        $(".panel-"+turno).toggleClass("active", duracion, transicion)
         obtenerDisponibles();
     }
     /*----------------------------------------------------------------------------
@@ -226,7 +221,6 @@ $(document).ready(function(){
     }
 
     function agregarSaltada(){
-            fichaSaltar.removeClass("turno");
             $(".contenedor"+turno +" .saltadas").append(fichaSaltar);
             if (turno == "jugador1"){
                 jugador2Lista.push(fichaSaltar); 
@@ -235,6 +229,11 @@ $(document).ready(function(){
                 jugador1Lista.push(fichaSaltar); 
             }
             actualizarContador();
+            var eliminadas = $(".saltadas div");
+            $.each(eliminadas, function(index, obj){
+                $(obj).removeClass("turno")
+                // $(obj).draggable().draggable("destroy")
+            })
     }
     function obtenerDisponibles(){
             $(".turno").mouseenter(function(){
@@ -313,6 +312,7 @@ $(document).ready(function(){
             },
             out: function(event, ui){
                 movimientoValido = false;
+                return
             }
         });
     }
@@ -341,11 +341,11 @@ $(document).ready(function(){
             $("#activoJugador1").html(activoJugador1);
             $("#activoJugador2").html(activoJugador2);
         if(activoJugador1 == 0){
-            mostrarAlert(tituloGanador,msjGganador2);
+            mostrarAlerta(tituloGanador,msjGganador2);
         }
 
         if (activoJugador2 == 0){
-            alert(tituloGanador, msjGanador1);
+            mostrarAlerta(tituloGanador, msjGanador1);
         }
     }
 
@@ -358,7 +358,7 @@ $(document).ready(function(){
         }
     }
 
-    function mostrarAlerta(titulo, mensaje){
+    function mostrarAlerta(titulo, mensaje, botones = null,){
         $("#mensaje").html(mensaje);
         $("#mensaje").dialog({
             title: titulo,
@@ -368,26 +368,34 @@ $(document).ready(function(){
                 effect:efecto,
                 duration: duracion,
                 easing: transicion
-            }
+            },
+            buttons: botones,
         })
     }
 
     function reiniciar(){
-        if (juegoIniciado){
-            $( "#mensaje" ).dialog( "close" );
-        }
         $("#iniciar span").html("");
         $('[class^="jugador"]').hide(efecto, transicion, duracion).remove();
+        $('[class^="panel"').removeClass("active");
         $("#tablero").damas("posicionarFichas");
+        
     }
     function iniciarJuego(){
         if (juegoIniciado){
-            mostrarAlerta(tituloIniciar, msjIniciar);
+             mostrarAlerta(tituloIniciar, msjIniciar, { Reiniciar: function () { reiniciar(); $(this).dialog("close");}});
             return
         }
         reiniciar()
         juegoIniciado = true;
     }    
+
+    /*----------------------------------------------------------------------------
+            Crear Tablero
+    ----------------------------------------------------------------------------*/
+    $("#tablero").damas();
+    $("#iniciar").click(function(){
+        iniciarJuego();
+    })
 })
 
 

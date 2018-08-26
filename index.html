@@ -13,30 +13,28 @@
 </head>
 <body>
 	<div class="container">
-		<div id="side-left">
-			<div id="top">
-				<button id="iniciar" class="btn"><span class="btn-content"></span></button>
-			</div>
-			<div class="panel">
-				<h3>Jugador 1</h3>
-				<div class="contenedorjugador2">
-					<p class="remaining">Fichas Disponibles<br><span id="activoJugador1"></span></p>
-					<p class="saltadas"></p>
-				</div>
-			</div>
-			<div class="panel">
-				<h3>Jugador 2</h3>
-				<div class="contenedorjugador1">
-					<p class="remaining">Fichas Disponibles<span id="activoJugador2"></span></p>
-					<p class="saltadas"></p>
-				</div>
+	<div id="side-left">
+		<div class="panel-jugador1">
+			<h3>Jugador 1</h3>
+			<div class="contenedorjugador2">
+				<p class="remaining">Fichas Disponibles<br><span id="activoJugador1"></span></p>
+				<p class="saltadas"></p>
 			</div>
 		</div>
+		<div class="panel-jugador2">
+			<h3>Jugador 2</h3>
+			<div class="contenedorjugador1">
+				<p class="remaining">Fichas Disponibles<br><span id="activoJugador2"></span></p>
+				<p class="saltadas"></p>
+			</div>
+		</div>
+	</div>
 	<div id="side-right">
 		<h2>Damas</h2>
 		<div id="tablero"></div>
 	</div>
-		<div id="mensaje"></div>
-		</div>
+	<button id="iniciar" class="btn"><span class="btn-content"></span></button>
+	<div id="mensaje"></div>
+	</div>
 </body>
 </html>
