@@ -1,19 +1,92 @@
+@font-face {
+    font-family: fontAwesome;
+    src: url('../fonts/FontAwesome.otf');
+}
+.fa{
+    font-family: fontAwesome;
+}
 body{
     font-family: 'Passion One', cursive;
-    position: fixed;
+    font-family: 'Source Sans Pro', sans-serif;
+    position: relative;
     width: 100%;
     height:100%;
     margin: 0;
+	background-position: center center;
+	background-repeat: none;
+	background-size: contain;
+    
+}
+h2 {
+	color: white;
+	text-align: center;
+	font-size: 9vh;
+	margin: 0;
+	line-height: normal;
+	display: block;
+	text-shadow: 0 2px 10px #000;
+}
+h3 {
+	font-size: 4vh;
+	text-align: center;
+	background: white;
+	padding: 3vh;
+	color: #339af0;
+	margin: 0;
+}
+.btn {
+	width: 10vh;
+	height: 10vh;
+	padding: 0;
+	background: #339af0;
+	border: none;
+	color: white;
+	font-family: 'Passion One', cursive;
+	cursor: pointer;
+	position: fixed;
+	border-radius: 50%;
+	right: 5vh;
+	top: 5vh;
+	z-index: 100;
+}
+.btn-content {
+	position: relative;
+	font-family: fontAwesome;
+	font-size: 6.5vh;
+}
+
+button:hover{
+	background: #228be6;
+}
+
+
+.panel {
+	flex-grow: 1;
+	min-height: 45vh;
+	background: white;
+	margin: 2vh;
+	position: relative;
+}
+h3 {
+	font-size: 4vh;
+	text-align: center;
+	background: white;
+	padding: 3vh;
+	color: #339af0;
 }
 #side-right {
+    flex: 4;
 	position: relative;
 	height: 100vh;
 	width: auto;
 	margin-left: 60px;
-	border: 1px solid blue;
 	-webkit-perspective: 100px;
 	perspective: 80vh;
-	margin: 0;
+    margin: 0;
+    background-image: url('../img/bk.jpg');
+	background-position: center center;
+	background-repeat: none;
+	background-size: contain;
 }
 #tablero {
 	position: relative;
@@ -21,7 +94,7 @@ body{
 	/* background-color: red; */
 	background: rgba(100,100,100,0.5);
 	-webkit-transform-style: preserve-3d;
-	-webkit-transform: rotateX(45deg);
+	-webkit-transform: rotateX(12deg);
 	transform-style: preserve-3d;
 	transform: rotateX(12deg);
 	margin: auto;
@@ -30,7 +103,7 @@ body{
 	border-radius: 1vh;
 	width: 80vh;
 	height: 80vh;
-	margin: 5vh auto;
+	margin: 0vh auto;
 }
 /* #tablero {
 	position: relative;
@@ -62,38 +135,68 @@ body{
 .white {
 	background-color: #FFFFFF4D;
 }
-[class^="jugador"]{
-    border-radius:50%;
-    -webkit-border-radius:50%;
-    -moz-border-radius:50%;
-    -ms-border-radius:50%;
-    -o-border-radius:50%;
-    position: relative;
-    height: 8vh;
-    width:8vh;
-    margin: 1vh auto;
-}
-.jugador1{
-    background-color: red;
+/* [class^="jugador"] {
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-ms-border-radius: 50%;
+	-o-border-radius: 50%;
+	position: relative;
+	height: 8vh;
+	width: 8vh;
+	margin: 1vh auto;
+	box-shadow: 0 2px 0px 2px rgb(120, 72, 72);
+} */
+
+.jugador1 {
+	background-color: #16bac6;
 }
 
-.jugador2{
-    background-color: green;
+.jugador2 {
+	background-color: white;
 }
-.king{
+
+[class^="jugador"] {
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-ms-border-radius: 50%;
+	-o-border-radius: 50%;
+	position: relative;
+	height: 8vh;
+	width: 8vh;
+	margin: 1vh auto;
+	top: -0.5vh;
+	box-shadow: 0 3px #505050;
+}
+[class^="jugador"]::before{
+    content: '';
+}
+
+.king.jugador1{
     background-color: blue;
 }
-.king::before {
+.king.jugador2{
+	background-color: #a7a7a7;
+}
+[class^="jugador"]::before, .king::before {
 	position: relative;
-	content: '';
 	width: 100%;
 	height: 100%;
 	float: left;
 	right: 0;
-	font-family: ionicons;
-	font-size: 8vh;
+	font-family: fontAwesome;
+	/* font-family: //ionicons; */
+	font-size: 4vh;
 	text-align: center;
 	line-height: 7.6vh;
+	color: rgba(0,0,0,0.6);
+	text-shadow: 0px 2px 0px rgba(255, 255, 255, 0.2);
+}
+
+
+.king::before {
+	content: '';
 }
 
 .disponible{
@@ -107,7 +210,8 @@ body{
 }
 .turno:hover {
 	cursor: pointer;
-	box-shadow: 0px 2px 3px 1px #8f8e8e;
+	box-shadow: 0px 7px 6px 0px #0009;
+	top: -2vh;
 }
 
 .saltar{
@@ -127,14 +231,9 @@ body{
     flex-grow: 1;
     
 }
-#side-left{
-    flex: 1;
-    background: orange;
-}
-
-#side-right{
-    flex: 4;
-    /* background: orange; */
+#side-left {
+	flex: 1;
+	background: #339af0;
 }
 
 #center{
@@ -145,7 +244,42 @@ body{
 
 }
 #mensaje{
-    display: block;
-    background: green;
 
 }
+
+.remaining {
+	font-size: 3.2vh;
+	text-align: center;
+	color: #666;
+}
+.remaining span{
+    font-weight: bold;
+    color: #444
+}
+.saltadas {
+	background: red;
+	margin: auto;
+	max-width: 100%;
+	/* display: block; */
+	min-height: 20vh;
+	display: block;
+	width: 100%;
+	/* margin: 0vh auto; */
+	position: absolute;
+	bottom: 0;
+	/* top: 0; */
+}
+.saltadas [class^="jugador"] {
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-ms-border-radius: 50%;
+	-o-border-radius: 50%;
+	position: relative;
+	height: 5vh;
+	width: 5vh;
+	margin: 1vh auto;
+	top: 0;
+	box-shadow: 0 3px #505050;
+	float: left;
+}   

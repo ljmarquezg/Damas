@@ -1,9 +1,9 @@
 $(document).ready(function(){
-    $("h3").button();
     var turno = "",
+        juegoIniciado = false
         turnoStatus = 0,
         offset = "",
-        efecto = "slide",
+        efecto = "fade",
         transicion = "swing",
         duracion = 500;
         posicionSaltar = [],
@@ -18,7 +18,15 @@ $(document).ready(function(){
         dropFicha="",
         jugador1Lista = [],
         jugador2Lista = [],
-        reyLista = [];
+        reyLista = [],
+        //Manejo de alertas
+        tituloInvalido = "Movimiento Inválido",
+        msjInvalido = "Ha ocurrido un error al procesar el movimietno. Intenta de nuevo",
+        tituloIniciar ="Advertencia!"
+        msjIniciar = '¿Está seguro que desea <b>reiniciar</b> la partida actual?<br><button onclick="reiniciar()">Aceptar</button>';
+        tituloGanador = "Juego Terminado"
+        msjGanador1 = '<span class="fa"><span> Felicidades Jugador1. Has vencido a tu rival</span>'
+        msjGanador2 = '<span class="fa"><span> Felicidades Jugador2. Has vencido a tu rival</span>'
 
     /*----------------------------------------------------------------------------
             Crear Widget de juego
@@ -51,7 +59,7 @@ $(document).ready(function(){
             gridSize = $(".white").height();
         },
 
-        posicionarFichas: function(){
+        posicionarFichas: function(){           
             for(var fila = 1; fila <= this._tablero; fila++){
                 if(fila <= (this._tablero/2)-1){
                     $("#fila-"+fila+" .white").append("<div class='jugador1'>").children().hide().show(efecto, transicion, duracion);
@@ -63,7 +71,9 @@ $(document).ready(function(){
             //Inicializar los objetos como Draggables
             $(".jugador1").draggable();
             $(".jugador2").draggable();
-            
+            turno = ""
+            verificarJugador();
+            actualizarContador();
         }
     });
 
@@ -71,8 +81,10 @@ $(document).ready(function(){
             Crear Tablero
     ----------------------------------------------------------------------------*/
     $("#tablero").damas();
-    $("#tablero").damas("posicionarFichas")
-    /*----------------------------------------------------------------------------
+    $("#iniciar").click(function(){
+        iniciarJuego();
+    })
+   /*----------------------------------------------------------------------------
             Verificar jugador en turno
     ----------------------------------------------------------------------------*/
     function verificarJugador(){
@@ -108,19 +120,15 @@ $(document).ready(function(){
             
             verificarRey = fichaActual.data("king");
             if (verificarRey !== undefined){
-                console.log("Tiene data de rey")
                 esRey = $.inArray(verificarRey, reyLista);
             }
-            console.log(esRey)
         if (turno == "jugador1" || esRey !== null ){
-            console.log("EsRey1")
             n_fila = parseInt(j_fila+1);
             sig_fila = parseInt(j_fila+2);
             recorrerFila();
         }
 
         if (turno == "jugador2" || esRey !== null){
-            console.log("EsRey2")
             n_fila = parseInt(j_fila-1);
             sig_fila = parseInt(j_fila-2);
             recorrerFila();
@@ -149,13 +157,17 @@ $(document).ready(function(){
                 disponible2_salto_mov = disponible2_salto.children();
                 mostrarDisponibles(disponible2_salto, disponible2_salto_mov, true);
             }
+
         }
         
-        
-
         var isObligada = $(".obligado");
         if (isObligada.length > 0){
             posicionSaltar.push(isObligada)
+        }
+        var enTablero = $("#tablero ."+turno).length;
+        var totalDisponibles = $(".disponible").length
+        if(enTablero == 1 && totalDisponibles == 0){
+            alert("no hay mas movimientos")
         }
     }
 
@@ -185,7 +197,6 @@ $(document).ready(function(){
         // verificar si se ha saltado una ficha y existen posiciones Disponibles
         if(fichaSaltar.length > 0 && posicionSaltar.length > 0){
             //Enviar ficha saltada al contenedor del jugador contrario
-            
             agregarSaltada();
             removerDisponibles();
             //Simular entrada del mouse para recalcular movimientos disponibles
@@ -215,7 +226,8 @@ $(document).ready(function(){
     }
 
     function agregarSaltada(){
-            $(".contenedor"+turno).append(fichaSaltar);
+            fichaSaltar.removeClass("turno");
+            $(".contenedor"+turno +" .saltadas").append(fichaSaltar);
             if (turno == "jugador1"){
                 jugador2Lista.push(fichaSaltar); 
             }
@@ -229,7 +241,7 @@ $(document).ready(function(){
             fichaActual = $(this);
             obtenerMovimientos(fichaActual);
             $("."+turno).draggable({
-                containment: "#tablero",
+                containment: "#side-right",
                 hoverClass: "hover",
                 cursor: "pointer",
                 // grid: [gridSize,gridSize],
@@ -244,19 +256,15 @@ $(document).ready(function(){
                     verificarMovimiento();
                 },
                 drag: function(event,ui){
-                    var distanciaTop = Math.abs(parseInt(ui.position.top));
-                    var distanciaLeft = Math.abs(parseInt(ui.position.left));
-                    $("#mensaje").html(distanciaLeft + " " + distanciaTop)
+                  
                 },
                 stop: function( event, ui ) {
-                    var distanciaTop = Math.abs(parseInt(offset.top - ui.offset.top));
-                    var distanciaLeft = Math.abs(parseInt(offset.left - ui.offset.left));
-                    $("#mensaje").html(distanciaTop + " " + distanciaLeft);
                     convertirRey();
                     if(movimientoValido){
                         verificarTurno();
                     }else{
-                        alert("Es la misma posicion");
+                        $(fichaActual).css({"left":"", "top":""});
+                        mostrarAlerta(tituloInvalido, msjInvalido);
                     }
                 },
             });
@@ -318,7 +326,6 @@ $(document).ready(function(){
             Remover indicadores de movimientos disponibles
     ----------------------------------------------------------------------------*/
     function removerDisponibles(){
-        console.log("removerDisponibles")
         posicionDisponible = [];
         posicionSaltar = [];
         fichaSaltar = "";
@@ -334,11 +341,11 @@ $(document).ready(function(){
             $("#activoJugador1").html(activoJugador1);
             $("#activoJugador2").html(activoJugador2);
         if(activoJugador1 == 0){
-            alert("Ganador Jugador 2");
+            mostrarAlert(tituloGanador,msjGganador2);
         }
 
         if (activoJugador2 == 0){
-            alert("Ganador Jugador 1");
+            alert(tituloGanador, msjGanador1);
         }
     }
 
@@ -350,8 +357,37 @@ $(document).ready(function(){
             reyLista.push(reySig);
         }
     }
-    verificarJugador();
-    actualizarContador();
+
+    function mostrarAlerta(titulo, mensaje){
+        $("#mensaje").html(mensaje);
+        $("#mensaje").dialog({
+            title: titulo,
+            autoOpen: true,
+            modal: true,
+            show: {
+                effect:efecto,
+                duration: duracion,
+                easing: transicion
+            }
+        })
+    }
+
+    function reiniciar(){
+        if (juegoIniciado){
+            $( "#mensaje" ).dialog( "close" );
+        }
+        $("#iniciar span").html("");
+        $('[class^="jugador"]').hide(efecto, transicion, duracion).remove();
+        $("#tablero").damas("posicionarFichas");
+    }
+    function iniciarJuego(){
+        if (juegoIniciado){
+            mostrarAlerta(tituloIniciar, msjIniciar);
+            return
+        }
+        reiniciar()
+        juegoIniciado = true;
+    }    
 })
 
 
