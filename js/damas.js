@@ -34,8 +34,8 @@ $(document).ready(function(){
         tituloIniciar ="Advertencia!",
         msjIniciar = '<p>¿Está seguro que desea <b>reiniciar</b> la partida actual?</p>';
         tituloGanador = "Juego Terminado",
-        msjGanador1 = '<span class="fa"></span> Felicidades'+nombreJugador1+'. Has vencido a '+nombreJugador2+' rival</span>',
-        msjGanador2 = '<span class="fa"></span> Felicidades'+nombreJugador2+'. Has vencido a '+nombreJugador1+' rival</span>';
+        msjGanador1 = '<span class="fa"></span> Felicidades'+nombreJugador1+'. Has vencido a '+nombreJugador2+' </span>',
+        msjGanador2 = '<span class="fa"></span> Felicidades'+nombreJugador2+'. Has vencido a '+nombreJugador1+' </span>';
         msjSinMovimientos = '<span class="fa"></span> El jugador se ha quedado sin movimientos</span>';
 
     /*----------------------------------------------------------------------------
@@ -202,17 +202,17 @@ $(document).ready(function(){
             obtenerMovimientos($(obj));
         });
 
-        if ($(".disponible").length == 0  && (activoJugador1 > 0 || activoJugador2 > 0)){
+        console.log($(".disponible").length);
+        console.log(activoJugador1)
+        console.log(activoJugador2)
+        if(activoJugador1 == 0){
+            mostrarAlerta(tituloGanador,msjGanador2);
+        }else if (activoJugador2 == 0){
+            mostrarAlerta(tituloGanador, msjGanador1);
+        }else if ( ($(".disponible").length == 0  && activoJugador1 > 1) || ( $(".disponible").length == 0 && activoJugador2 > 1) ){
             mostrarAlerta(tituloGanador, msjSinMovimientos)
-        }else{
-            if(activoJugador1 == 0){
-                mostrarAlerta(tituloGanador,msjGanador2);
-            }
-    
-            if (activoJugador2 == 0){
-                mostrarAlerta(tituloGanador, msjGanador1);
-            }
         }
+
         $(".disponible").removeClass("disponible");
         obtenerDisponibles();
     }
@@ -331,7 +331,6 @@ $(document).ready(function(){
     }
 
     function agregarSaltada(){
-            console.log()
             $("#contenedor"+turno +" .saltadas").append(fichaSaltar);
             if (turno == "jugador1"){
                 jugador2Lista.push(fichaSaltar); 
