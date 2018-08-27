@@ -126,7 +126,7 @@ $(document).ready(function(){
 
             var legend = document.createElement("p");
             legend.setAttribute("id","changeColor"+i);
-            var legendText = document.createTextNode("Cambiar color");
+            var legendText = document.createTextNode("Cambiar Color");
             legend.appendChild(legendText);
             row.appendChild(legend);
 
@@ -515,6 +515,12 @@ $(document).ready(function(){
     });
 
     $('[id^="changeColor"]').click(function(){
+        if($('[id^="changeColor"]').html() == "Cambiar Color"){
+            $('[id^="changeColor"]').html("Mostrar Disponibles");
+        }
+        else{
+            $('[id^="changeColor"]').html("Cambiar Color");
+        }
         $(".custom-radios").toggle("slide");
         $(".remaining").toggle("slide");
         $(".saltadas").toggle("slide");
