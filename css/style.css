@@ -2,8 +2,13 @@
     font-family: fontAwesome;
     src: url('../fonts/FontAwesome.otf');
 }
-.fa{
-    font-family: fontAwesome;
+.fa {
+	font-family: fontAwesome;
+	color: orange;
+	font-size: 10vh;
+	display: block;
+	text-shadow: 0 2px 2px #8c8c8c;
+	margin-bottom: 2vh;
 }
 body{
     font-family: 'Passion One', cursive;
@@ -17,6 +22,12 @@ body{
 	background-size: contain;
     
 }
+p {
+	margin: 0;
+	text-align: center;
+	color: #339af0;
+	cursor: pointer;
+}
 h2 {
 	color: white;
 	text-align: center;
@@ -25,6 +36,16 @@ h2 {
 	line-height: normal;
 	display: block;
 	text-shadow: 0 2px 10px #000;
+}
+h3 > input {
+	font-size: 3vh;
+	text-align: center;
+	background: white;
+	padding: 0vh;
+	color: #339af0;
+	margin: 0;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: bold;
 }
 h3 {
 	font-size: 4vh;
@@ -65,23 +86,17 @@ button:hover{
 	margin: 2vh;
 	position: relative;
 	box-shadow: 0px 2px 4px #444;
-	filter: grayscale(100%);
-	-webkit-filter: grayscale(100%);
 	opacity: 0.85;
-	border-left: solid 2vh #f67c05;
+	border-left: solid 2vh #888
+	
 }
 [class^="panel"].active {
-	filter: grayscale(0%);
-	-webkit-filter: grayscale(0%);
 	margin: 1.5vh;
-	opacity: 1;}
-h3 {
-	font-size: 4vh;
-	text-align: center;
-	background: white;
-	padding: 3vh;
-	color: #339af0;
+	opacity: 1;
+	border-left: solid 2vh #f67c05;
+	
 }
+
 #side-right {
     flex: 3;
 	position: relative;
@@ -101,10 +116,10 @@ h3 {
 	border: 0.5vh solid #3f250f;
 	/* background-color: red; */
 	background: rgba(100,100,100,0.5);
-	-webkit-transform-style: preserve-3d;
-	-webkit-transform: rotateX(12deg);
-	transform-style: preserve-3d;
-	transform: rotateX(12deg);
+	/* -webkit-transform-style: preserve-3d; */
+	/* -webkit-transform: rotateX(12deg); */
+	/* transform-style: preserve-3d; */
+	/* transform: rotateX(12deg); */
 	margin: auto;
 	background-image: url('../img/bk.png');
 	box-shadow: 0px 1vh 2vh #000;
@@ -134,8 +149,6 @@ h3 {
 .jugador1 {
 	background-color: #16bac6;
 }
-
-
 .jugador2 {
 	background-color: white;
 }
@@ -152,17 +165,12 @@ h3 {
 	margin: 1vh auto;
 	top: -0.5vh;
 	box-shadow: 0 0.7vh #505050;
+	overflow: hidden;
 }
 [class^="jugador"]::before{
     content: '';
 }
 
-.king.jugador1{
-    background-color: blue;
-}
-.king.jugador2{
-	background-color: #a7a7a7;
-}
 [class^="jugador"]::before, .king::before {
 	position: relative;
 	width: 100%;
@@ -179,8 +187,10 @@ h3 {
 }
 
 .king::before {
-    content: '';
-     font-size: 4vh;
+	content: '';
+	font-size: 4vh;
+	background-color: #2e5b6066;
+	/* filter: brightness(15%); */
 }
 
 .disponible{
@@ -222,19 +232,12 @@ h3 {
     display: block;
 }
 
-#center{
-    flex: 4;
-    background: rgb(232, 202, 146);
-    float:left;
-    height: 100%;
-
-}
-
 #mensaje {
 	background: #fff;
 	text-align: center;
 	border: solid #ccc 1px;
 	color: #888;
+	font-weight: bold;
 }
 
 .remaining {
@@ -396,6 +399,77 @@ h3 {
         top: initial;
         bottom: 3vh;
     }
-
-    
 }
+
+/*Input radio*/
+.custom-radios div {
+  display: inline-block;
+}
+.custom-radios input[type="radio"] {
+  display: none;
+}
+.custom-radios input[type="radio"] + label {
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+.custom-radios input[type="radio"] + label span {
+	display: inline-block;
+	width: 6vh;
+	height: 6vh;
+	margin: 2vh;
+	vertical-align: middle;
+	cursor: pointer;
+	border-radius: 50%;
+	border: 0.5vh solid #FFFFFF;
+	box-shadow: 0 0.3vh 0.2vh 0 rgba(0, 0, 0, 0.33);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+.custom-radios input[type="radio"] + label span p {
+  opacity: 0;
+  transition: all .3s ease;
+  font-family: fontAwesome;
+	color: white;
+	font-size: 3vh;
+	line-height: 6vh;
+	margin: 0;
+}
+.custom-radios input[type="radio"] + [for*="color-1"] span {
+	background-color: #dbdbdb;
+}
+
+.custom-radios input[type="radio"]:checked + label span p {
+	opacity: 1;
+}
+
+.custom-radios input[type="radio"]:checked + label span p {
+	opacity: 1;
+}
+
+.color-1{
+	background-color: #dbdbdb;
+}
+
+.color-2{
+	background-color: #2ecc71;
+}
+
+.color-3{
+	background-color: #16bac6;
+}
+
+.color-4{
+	background-color: #f1c40f;
+}
+
+.color-5{
+	background-color: #e74c3c;
+}
+
+.color-6 {
+	background-color: #4a4a4a;
+}
+
+

@@ -8,6 +8,12 @@ $(document).ready(function(){
         efecto = "fade",
         transicion = "swing",
         duracion = 500;
+        activoJugador1 = 12;
+        activoJugador2 = 12;
+        nombreJugador1="Jugador 1";
+        nombreJugador2 = "Jugador 2";
+        colorJugador1="",
+        colorJugador2="",
         reyLista = [],
         jugador1Lista = [],
         jugador2Lista = [],
@@ -24,13 +30,13 @@ $(document).ready(function(){
         dropFicha="",       
         //Manejo de alertas
         tituloInvalido = "Movimiento Inválido",
-        msjInvalido = "Ha ocurrido un error al procesar el movimietno. Intenta de nuevo",
+        msjInvalido = '<span class="fa"></span>Ha ocurrido un error al procesar el movimiento. Intenta de nuevo',
         tituloIniciar ="Advertencia!",
         msjIniciar = '<p>¿Está seguro que desea <b>reiniciar</b> la partida actual?</p>';
         tituloGanador = "Juego Terminado",
-        msjGanador1 = '<span class="fa"></span> Felicidades Jugador1. Has vencido a tu rival</span>',
-        msjGanador2 = '<span class="fa"></span> Felicidades Jugador2. Has vencido a tu rival</span>';
-        msjSinMovimientos = '<span class="fa"><span> El jugador'+turno+' se ha quedado sin movimientos</span>';
+        msjGanador1 = '<span class="fa"></span> Felicidades'+nombreJugador1+'. Has vencido a '+nombreJugador2+' rival</span>',
+        msjGanador2 = '<span class="fa"></span> Felicidades'+nombreJugador2+'. Has vencido a '+nombreJugador1+' rival</span>';
+        msjSinMovimientos = '<span class="fa"></span> El jugador se ha quedado sin movimientos</span>';
 
     /*----------------------------------------------------------------------------
             Crear Widget de juego
@@ -61,6 +67,8 @@ $(document).ready(function(){
             }
             //Obtener el tamaño de cada posición
             gridSize = $(".white").height();
+            personalizarTablero();
+            $(".custom-radios").hide("slide");
         },
 
         posicionarFichas: function(){           
@@ -73,22 +81,106 @@ $(document).ready(function(){
                 }
             }
             //Inicializar los objetos como Draggables
-            $(".jugador1").draggable();
-            $(".jugador2").draggable();
+            $(".jugador1").addClass(colorJugador1).draggable();
+            $(".jugador2").addClass(colorJugador2).draggable();
             turno = "";
             jugador1Lista = [],
             jugador2Lista = [],
             reyLista = [],
             verificarJugador();
             actualizarContador();
+            nombreJugador1 = $("#nombreJugador1").val();
+            nombreJugador2 = $("#nombreJugador2").val();
         }
     });
 
+    function personalizarTablero(){
+        var i=1;
+        var j=1;
+         // <div class="panel-jugador1">
+		// 	<h3><input type="text" id="nombreJugador1" value="Jugador1"/></h3>
+		// 	<div class="contenedorjugador2">
+		// 		<p class="remaining">Fichas Disponibles<br><span id="activoJugador1"></span></p>
+		// 		<p class="saltadas"></p>
+		// 	</div>
+		// </div>
+        var container = document.getElementById('side-left')
+        for (var i = 1; i <= 2; i++){
+            var div = document.createElement('div');
+            var row = div;
+            //Asignarle un id al contenedor
+             row.setAttribute("class", "panel-jugador"+i +" active");
+            //Asignarle una clase al contenedor
+            container.appendChild(row);
+            var panel = document.getElementsByClassName("panel-jugador"+i)
+            var h3 = document.createElement('h3');
+            var inputText = document.createElement('input');
+            Object.assign(inputText, {
+                type: 'text',
+                id: "nombreJugador"+i,
+               name: 'color-player-'+i,
+               value: "Jugador "+i
+              })
+
+            panel[0].appendChild(h3).appendChild(inputText);
+
+            var legend = document.createElement("p");
+            legend.setAttribute("id","changeColor"+i);
+            var legendText = document.createTextNode("Cambiar color");
+            legend.appendChild(legendText);
+            row.appendChild(legend);
+
+            var fieldset = document.createElement("div");
+            fieldset.setAttribute("id","colorPlayer"+i);
+            row.appendChild(fieldset);
+
+            
+
+            var customradios = document.createElement('div');
+            customradios.setAttribute("class", "custom-radios");
+            var divradios = document.createElement('div');
+
+            for (j=1; j<=6; j++){
+            var input = document.createElement('input');
+            // input.setAttribute({"type":"radio", "id":"jugador"});
+            Object.assign(input, {
+                type: 'radio',
+                id: "jugador-"+i+"color-"+j,
+               name: 'color-player-'+i,
+               value: "color-"+j
+              })
+            
+              var label = document.createElement('label');
+              label.setAttribute("for", "jugador-"+i+"color-"+j);
+              var span = document.createElement('span');
+              span.setAttribute("class","color-"+j);
+              var p = document.createElement('p');
+              p.innerHTML = "";
+    
+                divradios.appendChild(input);
+                divradios.appendChild(label).appendChild(span).appendChild(p);
+            }
+            customradios.appendChild(divradios);
+            var contenedor = document.createElement("div");
+            contenedor.setAttribute("id","contenedorjugador"+i);
+            fieldset.appendChild(customradios)
+            var remaining = document.createElement("p");
+            remaining.setAttribute("class","remaining");
+            remaining.innerHTML = 'Fichas Disponibles<br><span id="activoJugador'+i+'"></span>';
+            var saltadas = document.createElement("p");
+            saltadas.setAttribute("class","saltadas")
+            contenedor.appendChild(remaining);            
+            contenedor.appendChild(saltadas);
+            // fieldset.appendChild(remaining);
+            // fieldset.appendChild(saltadas);
+            fieldset.appendChild(contenedor)
+        }
+    }
    /*----------------------------------------------------------------------------
             Verificar jugador en turno
     ----------------------------------------------------------------------------*/
     function verificarJugador(){
-        $(".panel-"+turno).toggleClass("active", duracion, transicion)
+        $("#side-left .panel-"+turno).toggleClass("active", duracion, transicion)
         if(turno == "jugador1"){
             turno = "jugador2";
             $("#tablero .jugador1").draggable("disable");
@@ -103,25 +195,24 @@ $(document).ready(function(){
             $("#tablero .jugador1").draggable("enable");
             $("#tablero .jugador1").addClass("turno");
         };
-        $(".panel-"+turno).toggleClass("active", duracion, transicion)
+        $("#side-left .panel-"+turno).toggleClass("active", duracion, transicion)
         var obtenerFichas = $(".turno")
         // console.log(obtenerFichas);
         $.each(obtenerFichas, function(index, obj){
             obtenerMovimientos($(obj));
         });
 
-        if ($(".disponible").length == 0  ){
+        if ($(".disponible").length == 0  && (activoJugador1 > 0 || activoJugador2 > 0)){
             mostrarAlerta(tituloGanador, msjSinMovimientos)
+        }else{
+            if(activoJugador1 == 0){
+                mostrarAlerta(tituloGanador,msjGanador2);
+            }
+    
+            if (activoJugador2 == 0){
+                mostrarAlerta(tituloGanador, msjGanador1);
+            }
         }
-
-        if(activoJugador1 == 0){
-            mostrarAlerta(tituloGanador,msjGanador2);
-        }
-
-        if (activoJugador2 == 0){
-            mostrarAlerta(tituloGanador, msjGanador1);
-        }
-
         $(".disponible").removeClass("disponible");
         obtenerDisponibles();
     }
@@ -240,7 +331,8 @@ $(document).ready(function(){
     }
 
     function agregarSaltada(){
-            $(".contenedor"+turno +" .saltadas").append(fichaSaltar);
+            console.log()
+            $("#contenedor"+turno +" .saltadas").append(fichaSaltar);
             if (turno == "jugador1"){
                 jugador2Lista.push(fichaSaltar); 
             }
@@ -355,7 +447,7 @@ $(document).ready(function(){
     }
 
     function actualizarContador(){
-        var activoJugador1 = (12 - jugador1Lista.length);
+            activoJugador1 = (12 - jugador1Lista.length);
             activoJugador2 = (12 - jugador2Lista.length);
             $("#activoJugador1").html(activoJugador1);
             $("#activoJugador2").html(activoJugador2);
@@ -384,6 +476,9 @@ $(document).ready(function(){
             buttons: botones,
         })
     }
+    /*----------------------------------------------------------------------------
+            Estados del partido
+    ----------------------------------------------------------------------------*/
 
     function reiniciar(){
         removerDisponibles();
@@ -408,6 +503,46 @@ $(document).ready(function(){
     $("#tablero").damas();
     $("#iniciar").click(function(){
         iniciarJuego();
+    })
+
+    /*----------------------------------------------------------------------------
+           Personalizacion del juego
+    ----------------------------------------------------------------------------*/
+    $("#nombreJugador1").change(function(){
+        nombreJugador1 = $(this).val();
+    });
+    $("#nombreJugador2").change(function(){
+        nombreJugador2 = $(this).val();
+    });
+
+    $('[id^="changeColor"]').click(function(){
+        $(".custom-radios").toggle("slide");
+        $(".remaining").toggle("slide");
+        $(".saltadas").toggle("slide");
+    })
+
+    $('#colorPlayer1 input[type="radio"]').click(function(){
+        colorJugador1 = $(this).attr("value");
+        if(colorJugador2 != colorJugador1){    
+            for (i=1; i <=6; i++){
+                $(".jugador1").removeClass("color-"+i);
+            }
+            $(".jugador1").addClass(colorJugador1);
+        }else{
+            mostrarAlerta("Alerta", "No puede seleccionar el mismo color que el "+nombreJugador2)
+        }
+    })
+    $('#colorPlayer2 input[type="radio"]').click(function(){
+        colorJugador2 = $(this).attr("value");
+        if(colorJugador2 != colorJugador1){    
+            for (i=1; i <=6; i++){
+                $(".jugador2").removeClass("color-"+i);
+            }
+            $(".jugador2").addClass(colorJugador2);
+            // $("#colorPlayer2 .custom-radios").toggle("fold");
+        }else{
+            mostrarAlerta("Alerta", "No puede seleccionar el mismo color que el "+nombreJugador1)
+        }
     })
 })
 
