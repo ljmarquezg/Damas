@@ -10,8 +10,9 @@ $(document).ready(function(){
         duracion = 500;
         activoJugador1 = 12;
         activoJugador2 = 12;
-        nombreJugador1="Jugador 1";
-        nombreJugador2 = "Jugador 2";
+        nombreJugador1="";
+        nombreJugador2 = "";
+        nombreJugadorTurno="";
         colorJugador1="",
         colorJugador2="",
         reyLista = [],
@@ -30,12 +31,12 @@ $(document).ready(function(){
         dropFicha="",       
         //Manejo de alertas
         tituloInvalido = "Movimiento Inválido",
-        msjInvalido = '<span class="fa"></span>Ha ocurrido un error al procesar el movimiento. Intenta de nuevo',
+        msjInvalido = "";
         tituloIniciar ="Advertencia!",
-        msjIniciar = '<p>¿Está seguro que desea <b>reiniciar</b> la partida actual?</p>';
+        msjIniciar = "";
         tituloGanador = "Juego Terminado",
-        msjGanador1 = '<span class="fa"></span> Felicidades'+nombreJugador1+'. Has vencido a '+nombreJugador2+' </span>',
-        msjGanador2 = '<span class="fa"></span> Felicidades'+nombreJugador2+'. Has vencido a '+nombreJugador1+' </span>';
+        msjGanador1 = "";
+        msjGanador2 = "";
         msjSinMovimientos = '<span class="fa"></span> El jugador se ha quedado sin movimientos</span>';
 
     /*----------------------------------------------------------------------------
@@ -89,21 +90,12 @@ $(document).ready(function(){
             reyLista = [],
             verificarJugador();
             actualizarContador();
-            nombreJugador1 = $("#nombreJugador1").val();
-            nombreJugador2 = $("#nombreJugador2").val();
         }
     });
 
     function personalizarTablero(){
         var i=1;
         var j=1;
-         // <div class="panel-jugador1">
-		// 	<h3><input type="text" id="nombreJugador1" value="Jugador1"/></h3>
-		// 	<div class="contenedorjugador2">
-		// 		<p class="remaining">Fichas Disponibles<br><span id="activoJugador1"></span></p>
-		// 		<p class="saltadas"></p>
-		// 	</div>
-		// </div>
         var container = document.getElementById('side-left')
         for (var i = 1; i <= 2; i++){
             var div = document.createElement('div');
@@ -134,15 +126,12 @@ $(document).ready(function(){
             fieldset.setAttribute("id","colorPlayer"+i);
             row.appendChild(fieldset);
 
-            
-
             var customradios = document.createElement('div');
             customradios.setAttribute("class", "custom-radios");
             var divradios = document.createElement('div');
 
             for (j=1; j<=6; j++){
             var input = document.createElement('input');
-            // input.setAttribute({"type":"radio", "id":"jugador"});
             Object.assign(input, {
                 type: 'radio',
                 id: "jugador-"+i+"color-"+j,
@@ -171,8 +160,6 @@ $(document).ready(function(){
             saltadas.setAttribute("class","saltadas")
             contenedor.appendChild(remaining);            
             contenedor.appendChild(saltadas);
-            // fieldset.appendChild(remaining);
-            // fieldset.appendChild(saltadas);
             fieldset.appendChild(contenedor)
         }
     }
@@ -187,6 +174,7 @@ $(document).ready(function(){
             $("#tablero .jugador1").removeClass("turno");
             $("#tablero .jugador2").draggable("enable");
             $("#tablero .jugador2").addClass("turno");
+            nombreJugadorTurno = nombreJugador2;
             
         }else{
             turno =  "jugador1";
@@ -194,6 +182,7 @@ $(document).ready(function(){
             $("#tablero .jugador2").removeClass("turno");
             $("#tablero .jugador1").draggable("enable");
             $("#tablero .jugador1").addClass("turno");
+            nombreJugadorTurno = nombreJugador1;
         };
         $("#side-left .panel-"+turno).toggleClass("active", duracion, transicion)
         var obtenerFichas = $(".turno")
@@ -201,10 +190,6 @@ $(document).ready(function(){
         $.each(obtenerFichas, function(index, obj){
             obtenerMovimientos($(obj));
         });
-
-        console.log($(".disponible").length);
-        console.log(activoJugador1)
-        console.log(activoJugador2)
         if(activoJugador1 == 0){
             mostrarAlerta(tituloGanador,msjGanador2);
         }else if (activoJugador2 == 0){
@@ -346,6 +331,7 @@ $(document).ready(function(){
     }
     function obtenerDisponibles(){
             $(".turno").mouseenter(function(){
+            actualizarMensajes();
             fichaActual = $(this);
             obtenerMovimientos(fichaActual);
             $("."+turno).draggable({
@@ -507,12 +493,21 @@ $(document).ready(function(){
     /*----------------------------------------------------------------------------
            Personalizacion del juego
     ----------------------------------------------------------------------------*/
-    $("#nombreJugador1").change(function(){
-        nombreJugador1 = $(this).val();
+    $("#nombreJugador1").blur(function(){
+        actualizarMensajes();
     });
-    $("#nombreJugador2").change(function(){
-        nombreJugador2 = $(this).val();
+    $("#nombreJugador2").blur(function(){
+        actualizarMensajes();
     });
+
+    function actualizarMensajes(){
+        nombreJugador1 = $("#nombreJugador1").val();
+        nombreJugador2 = $("#nombreJugador2").val();
+        msjInvalido = '<span class="fa"></span><h4><b>'+nombreJugadorTurno+'</b></h4>Ha ocurrido un error al procesar el movimiento. Intenta de nuevo',
+        msjIniciar = '<p>¿Está seguro que desea <b>reiniciar</b> la partida actual?</p>';
+        msjGanador1 = '<span class="fa"></span> Felicidades <b>'+nombreJugador1+'</b>. Has vencido a <b>'+nombreJugador2+'<b> </span>',
+        msjGanador2 = '<span class="fa"></span> Felicidades <b>'+nombreJugador2+'</b>. Has vencido a <b>'+nombreJugador1+'<b> </span>';
+    }
 
     $('[id^="changeColor"]').click(function(){
         if($('[id^="changeColor"]').html() == "Cambiar Color"){
@@ -544,7 +539,6 @@ $(document).ready(function(){
                 $(".jugador2").removeClass("color-"+i);
             }
             $(".jugador2").addClass(colorJugador2);
-            // $("#colorPlayer2 .custom-radios").toggle("fold");
         }else{
             mostrarAlerta("Alerta", "No puede seleccionar el mismo color que el "+nombreJugador1)
         }
