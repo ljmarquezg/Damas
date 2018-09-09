@@ -529,7 +529,7 @@ $(document).ready(function(){
             }
             $(".jugador1").addClass(colorJugador1);
         }else{
-            mostrarAlerta("Alerta", "No puede seleccionar el mismo color que el "+nombreJugador2)
+            mostrarAlerta("Alerta", '<span class="fa"></span>No puede seleccionar el mismo color que el '+nombreJugador2)
         }
     })
     $('#colorPlayer2 input[type="radio"]').click(function(){
@@ -540,7 +540,7 @@ $(document).ready(function(){
             }
             $(".jugador2").addClass(colorJugador2);
         }else{
-            mostrarAlerta("Alerta", "No puede seleccionar el mismo color que el "+nombreJugador1)
+            mostrarAlerta("Alerta", '<span class="fa"></span>No puede seleccionar el mismo color que el '+nombreJugador1)
         }
     })
 })
